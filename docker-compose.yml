@@ -1,0 +1,42 @@
+services:
+  db-auth:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: authusr
+      POSTGRES_PASSWORD: authpwd
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./data/db/auth:/var/lib/postgresql/data
+      - ./service-auth/db-scheme:/docker-entrypoint-initdb.d
+
+  db-tracker:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: tracker
+      POSTGRES_USER: trackerusr
+      POSTGRES_PASSWORD: trackerpwd
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./data/db/tracker:/var/lib/postgresql/data
+      - ./service-tracker/db-scheme:/docker-entrypoint-initdb.d
+
+  kafka:
+    image: bitnami/kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./data/kafka/auth:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT

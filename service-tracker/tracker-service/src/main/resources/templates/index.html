@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    <title>Список задач</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript">
+        function loadMyTasks() {
+            loadTasks('my')
+        }
+
+        function loadAllTasks() {
+            loadTasks('all')
+        }
+
+        function loadTasks(mode) {
+            const xhr = new XMLHttpRequest();
+            let url = 'current_user'
+            if (mode === 'all') {
+                url = 'all'
+            }
+
+            xhr.open("GET", "/task/" + url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        render_table(JSON.parse(xhr.response), mode);
+                    } else {
+                        alert("Failed to get task list, code " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function render_table(tasks, mode) {
+            let tableId = 'tasks_own'
+            if (mode === 'all') {
+                tableId = 'tasks_all'
+            }
+
+            const table = document.getElementById(tableId);
+
+            tasks.forEach(function(task) {
+                const tr = table.insertRow();
+
+                let td = tr.insertCell()
+                td.innerText = task.id
+
+                td = tr.insertCell()
+                td.innerText = task.title
+
+                td = tr.insertCell()
+                td.innerText = task.description
+
+                td = tr.insertCell()
+                td.innerText = task.status
+
+                if (mode === 'all') {
+                    td = tr.insertCell()
+                    td.innerText = task.assignee.name + ' (id ' + task.assignee.id + ')'
+                }
+
+                td = tr.insertCell()
+                td.innerText = task.assignFee
+
+                td = tr.insertCell()
+                td.innerText = task.resolvePrice
+
+                td = tr.insertCell()
+                td.innerText = task.creationTime
+
+                if (mode === 'my') {
+                    td = tr.insertCell()
+                    if (task.status === 'IN_PROGRESS') {
+                        td.innerHTML = "<button type='button' onclick='resolve_task(" + task.id + ")'>Пометить выполненой</button>"
+                    }
+                }
+            });
+        }
+
+        function resolve_task(taskId) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/task/resolve/" + taskId, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("Task successfully resolved!");
+                        window.location.reload();
+                    } else {
+                        alert("Error, got status " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function shuffle_tasks() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/task/shuffle", true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("Tasks successfully shuffled!");
+                        window.location.reload();
+                    } else {
+                        alert("Error, got status " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+<a href="/create_task.html">Создать задачу</a>
+<div th:if="${canViewOwnTasks}">
+    <h1>Список моих задач</h1>
+    <table id = "tasks_own">
+        <tr>
+            <th>id</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Цена назначения</th>
+            <th>Цена исполнения</th>
+            <th>Дата создания</th>
+            <th>Действие</th>
+        </tr>
+    </table>
+    <script>loadMyTasks()</script>
+</div>
+<div th:if="${canViewAllTasks}">
+    <h1>Список всех задач</h1>
+    <table id = "tasks_all">
+        <tr>
+            <th>id</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Исполнитель</th>
+            <th>Цена назначения</th>
+            <th>Цена исполнения</th>
+            <th>Дата создания</th>
+        </tr>
+    </table>
+    <script>loadAllTasks()</script>
+</div>
+<div th:if="${canShuffleTasks}">
+    <button type='button' onclick='shuffle_tasks()'>Перемешать таски</button>
+</div>
+</body>
+</html>

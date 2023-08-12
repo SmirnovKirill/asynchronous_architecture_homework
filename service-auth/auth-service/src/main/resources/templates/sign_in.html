@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    <title>Вход в систему</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript">
+        function sign_in() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/auth", true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            const body = {
+                "name": document.getElementById("name").value,
+                "beakSize": document.getElementById("beak_size").value
+            };
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("Successfully signed in");
+                        document.getElementById("sign_in_form").reset();
+                        window.location.replace("/");
+                    } else {
+                        alert("Please check your credentials");
+                    }
+                }
+            };
+            xhr.send(JSON.stringify(body));
+        }
+    </script>
+</head>
+<body>
+<h1>Вход в систему</h1>
+<form id="sign_in_form">
+    <label for="name">Имя:</label><br>
+    <input type="text" id="name" name="name"><br>
+    <label for="beak_size">Размер клюва</label><br>
+    <input type="text" id="beak_size" name="beak_size"><br>
+    <input value="Войти" type="button" onclick="sign_in()"><br>
+</form>
+</body>
+</html>
