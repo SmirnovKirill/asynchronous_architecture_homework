@@ -10,7 +10,7 @@ services:
       - "5430:5432"
     volumes:
       - ./data/db/auth:/var/lib/postgresql/data
-      - ./service-auth/db-scheme:/docker-entrypoint-initdb.d
+      - ./service-auth/src/main/db-scheme:/docker-entrypoint-initdb.d
 
   db-tracker:
     image: postgres
@@ -23,7 +23,7 @@ services:
       - "5431:5432"
     volumes:
       - ./data/db/tracker:/var/lib/postgresql/data
-      - ./service-tracker/db-scheme:/docker-entrypoint-initdb.d
+      - ./service-tracker/src/main/db-scheme:/docker-entrypoint-initdb.d
 
   kafka:
     image: bitnami/kafka
