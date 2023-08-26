@@ -9,6 +9,7 @@ public record TaskStreamEvent(
     StreamEventType eventType,
     String taskPublicId,
     String title,
+    String jiraId,
     String description,
     TaskStatus status,
     long assigneeId,

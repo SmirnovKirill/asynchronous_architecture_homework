@@ -59,6 +59,6 @@ public class KafkaProducer {
   }
 
   private <T extends EventData> Event<T> createEvent(T data, EventName eventName) {
-    return new Event<>(UUID.randomUUID().toString(), eventName, OffsetDateTime.now(), "auth", data);
+    return new Event<>(UUID.randomUUID().toString(), 1, eventName, OffsetDateTime.now(), "auth", data);
   }
 }

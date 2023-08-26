@@ -17,10 +17,14 @@ public class TestDataGeneratorController {
   @GetMapping("/generate")
   public void generate() {
     List<Task> allTasks = taskService.getAllTasks();
-    allTasks.stream().forEach(taskService::removeTask);
+    allTasks.forEach(taskService::removeTask);
 
-    for (int i = 1; i <= 100; i++) {
+    for (int i = 1; i <= 20; i++) {
       taskService.createTask(new CreateTask("task-%d".formatted(i), "description-%d".formatted(i)));
+    }
+
+    for (int i = 1; i <= 80; i++) {
+      taskService.createTask(new CreateTask("[POPUG-AI] - task-%d".formatted(i), "description-%d".formatted(i)));
     }
   }
 }

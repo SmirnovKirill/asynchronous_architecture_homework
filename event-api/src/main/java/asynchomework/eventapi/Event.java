@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 
 public record Event<T extends EventData>(
   String eventId,
+  int eventVersion,
   EventName eventName,
   OffsetDateTime eventTime,
   String producer,

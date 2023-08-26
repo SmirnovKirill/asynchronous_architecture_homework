@@ -8,6 +8,7 @@ public record Task(
     long id,
     String publicId,
     String title,
+    String jiraId,
     String description,
     TaskStatus status,
     TrackerUser assignee,
@@ -19,7 +20,8 @@ public record Task(
     return new Task(
         taskDb.getTaskId(),
         taskDb.getTaskPublicId(),
-        taskDb.getTitle(),
+        extractTitle(taskDb.getTitle()),
+        extractJiraId(taskDb.getTitle()),
         taskDb.getDescription(),
         taskDb.getStatus(),
         TrackerUser.from(taskDb.getAssignee()),
@@ -27,5 +29,21 @@ public record Task(
         taskDb.getResolvePrice(),
         taskDb.getCreationTime()
     );
+  }
+
+  private static String extractTitle(String titleFull) {
+    if (!titleFull.contains("[") || !titleFull.contains("]") || !titleFull.contains(" - ")) {
+      return titleFull;
+    }
+
+    return titleFull.split(" - ")[1].trim();
+  }
+
+  private static String extractJiraId(String titleFull) {
+    if (!titleFull.contains("[") || !titleFull.contains("]") || !titleFull.contains(" - ")) {
+      return titleFull;
+    }
+
+    return titleFull.split(" - ")[0].replace("[", "").replace("]", "").trim();
   }
 }
