@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    <title>Список пользователей</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript">
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/user/all", true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    render_user_table(JSON.parse(xhr.response));
+                } else {
+                    alert("Failed to get user list, code " + xhr.status);
+                }
+            }
+        };
+        xhr.send();
+
+        function render_user_table(users) {
+            const table = document.getElementById("users");
+
+            users.forEach(function(user) {
+                const tr = table.insertRow();
+
+                let td = tr.insertCell()
+                td.innerText = user.id
+
+                td = tr.insertCell()
+                td.innerText = user.name
+
+                td = tr.insertCell()
+                td.innerText = user.beakSize
+
+                td = tr.insertCell()
+                td.innerText = user.role
+
+                td = tr.insertCell()
+                td.innerText = user.creationTime
+
+                td = tr.insertCell()
+                td.innerHTML = "<button type='button' onclick='remove_user(" + user.id + ")'>Удалить</button>"
+            });
+        }
+
+        function remove_user(user_id) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "/user?user_id=" + user_id, true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("User with id " + user_id + " successfully removed");
+                        window.location.reload();
+                    } else {
+                        alert("Error, got status " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+<a href="/sign_up.html">Регистрация</a>
+<h1>Список пользователей системы</h1>
+<table id = "users">
+    <tr>
+        <th>id</th>
+        <th>Имя</th>
+        <th>Размер клюва</th>
+        <th>Роль</th>
+        <th>Дата создания</th>
+        <th>Действие</th>
+    </tr>
+</table>
+</body>
+</html>
