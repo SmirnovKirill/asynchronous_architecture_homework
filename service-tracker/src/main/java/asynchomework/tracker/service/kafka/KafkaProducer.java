@@ -28,15 +28,15 @@ public class KafkaProducer {
   }
 
   public void sendTaskCreated(Task task) {
-    validateAndSend(Topic.TASK, task.publicId(), new TaskCreatedEvent(task.publicId(), task.assignee().id()), 1);
+    validateAndSend(Topic.TASK, task.publicId(), new TaskCreatedEvent(task.publicId(), task.assignee().id(), task.creationTime()), 1);
   }
 
   public void sendTaskAssigned(Task task) {
     validateAndSend(Topic.TASK, task.publicId(), new TaskAssignedEvent(task.publicId(), task.assignee().id()), 1);
   }
 
-  public void sendTaskResolved(Task task) {
-    validateAndSend(Topic.TASK, task.publicId(), new TaskResolvedEvent(task.publicId(), task.assignee().id()), 1);
+  public void sendTaskResolved(Task task, OffsetDateTime resolveTime) {
+    validateAndSend(Topic.TASK, task.publicId(), new TaskResolvedEvent(task.publicId(), task.assignee().id(), resolveTime), 1);
   }
 
   public void sendTaskCreatedOrModifiedStream(Task task, StreamEventType eventType) {
@@ -47,7 +47,7 @@ public class KafkaProducer {
         task.jiraId(),
         task.description(),
         TaskStatus.valueOf(task.status().toString()),
-        task.assignee().id(),
+        task.assignee().publicId(),
         task.assignFee(),
         task.resolvePrice(),
         task.creationTime()
@@ -65,7 +65,7 @@ public class KafkaProducer {
         null,
         null,
         null,
-        0,
+        null,
         null,
         null,
         null

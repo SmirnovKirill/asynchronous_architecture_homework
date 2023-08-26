@@ -24,7 +24,9 @@ public class SchemaValidator {
       Pair.of(EventName.TASK_STREAM, 2), getSchemaForEvnet(EventName.TASK_STREAM, 2),
       Pair.of(EventName.TASK_ASSIGNED, 1), getSchemaForEvnet(EventName.TASK_ASSIGNED, 1),
       Pair.of(EventName.TASK_CREATED, 1), getSchemaForEvnet(EventName.TASK_CREATED, 1),
-      Pair.of(EventName.TASK_RESOLVED, 1), getSchemaForEvnet(EventName.TASK_RESOLVED, 1)
+      Pair.of(EventName.TASK_RESOLVED, 1), getSchemaForEvnet(EventName.TASK_RESOLVED, 1),
+      Pair.of(EventName.ACCOUNT_STREAM, 1), getSchemaForEvnet(EventName.ACCOUNT_STREAM, 1),
+      Pair.of(EventName.ACCOUNT_BALANCE_CHANGED, 1), getSchemaForEvnet(EventName.ACCOUNT_BALANCE_CHANGED, 1)
   );
 
   private static JsonSchema getSchemaForEvnet(EventName eventName, int version) {

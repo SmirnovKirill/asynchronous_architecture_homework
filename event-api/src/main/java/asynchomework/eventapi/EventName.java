@@ -1,10 +1,12 @@
 package asynchomework.eventapi;
 
 public enum EventName {
-  USER_CREATED,
   USER_STREAM,
+  USER_CREATED,
   TASK_ASSIGNED,
+  TASK_STREAM,
   TASK_CREATED,
   TASK_RESOLVED,
-  TASK_STREAM,
+  ACCOUNT_STREAM,
+  ACCOUNT_BALANCE_CHANGED,
 }

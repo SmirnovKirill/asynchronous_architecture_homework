@@ -8,6 +8,9 @@
         "assigneeId" : {
           "type" : "integer"
         },
+        "resolveTime" : {
+          "type" : [ "string", "null" ]
+        },
         "taskPublicId" : {
           "type" : [ "string", "null" ]
         }
@@ -21,7 +24,7 @@
         "type" : "null"
       }, {
         "type" : "string",
-        "enum" : [ "USER_CREATED", "USER_STREAM", "TASK_ASSIGNED", "TASK_CREATED", "TASK_RESOLVED", "TASK_STREAM" ]
+        "enum" : [ "USER_STREAM", "USER_CREATED", "TASK_ASSIGNED", "TASK_STREAM", "TASK_CREATED", "TASK_RESOLVED", "ACCOUNT_STREAM", "ACCOUNT_BALANCE_CHANGED" ]
       } ]
     },
     "eventTime" : {

@@ -2,8 +2,6 @@ package asynchomework.tracker.service.config;
 
 import asynchomework.tracker.service.kafka.KafkaListener;
 import asynchomework.tracker.service.kafka.KafkaProducer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -30,9 +28,6 @@ import org.springframework.kafka.core.ProducerFactory;
     KafkaProducer.class,
 })
 public class KafkaConfig {
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-      .registerModule(new JavaTimeModule());
-
   @Bean
   @ConfigurationProperties(prefix = "kafka")
   public Properties kafkaProperties() {

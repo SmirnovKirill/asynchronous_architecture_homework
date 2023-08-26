@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: auth
       POSTGRES_USER: authusr
-      POSTGRES_PASSWORD: authpwd
+      POSTGRES_PASSWORD: 123
     ports:
       - "5430:5432"
     volumes:
@@ -18,19 +18,32 @@ services:
     environment:
       POSTGRES_DB: tracker
       POSTGRES_USER: trackerusr
-      POSTGRES_PASSWORD: trackerpwd
+      POSTGRES_PASSWORD: 123
     ports:
       - "5431:5432"
     volumes:
       - ./data/db/tracker:/var/lib/postgresql/data
       - ./service-tracker/src/main/db-scheme:/docker-entrypoint-initdb.d
 
+  db-accounting:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: accounting
+      POSTGRES_USER: accountingusr
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/db/accounting:/var/lib/postgresql/data
+      - ./service-accounting/src/main/db-scheme:/docker-entrypoint-initdb.d
+
   kafka:
     image: bitnami/kafka
     ports:
       - "9092:9092"
     volumes:
-      - ./data/kafka/auth:/bitnami/kafka
+      - ./data/kafka:/bitnami/kafka
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker

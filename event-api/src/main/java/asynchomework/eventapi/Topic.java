@@ -1,10 +1,12 @@
 package asynchomework.eventapi;
 
 public enum Topic {
-  USER("user"),
   USER_STREAM("user_stream"),
+  USER("user"),
+  TASK_STREAM("task_stream"),
   TASK("task"),
-  TASK_STREAM("task_stream");
+  ACCOUNT_STREAM("account_stream"),
+  ACCOUNT_BALANCE("account_balance");
 
   private final String name;
 

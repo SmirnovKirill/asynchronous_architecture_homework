@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html lang="ru">
+<head>
+    <title>Список задач</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript">
+        function loadPersonalAccountInfo() {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("GET", "/accounting/personal_info", true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        render_personal_info_table(JSON.parse(xhr.response));
+                    } else {
+                        alert("Failed to get task list, code " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function render_personal_info_table(personalInfo) {
+            const personalAccountBrief = document.getElementById("personal_account_brief");
+            personalAccountBrief.innerText = "Пользователь: " + personalInfo.account.user.name + ", баланс " + personalInfo.account.balance
+
+            const table = document.getElementById("account_log_personal");
+            personalInfo.accountLogs.forEach(function(log) {
+                const tr = table.insertRow();
+
+                let td = tr.insertCell()
+                td.innerText = log.logId
+
+                td = tr.insertCell()
+                td.innerText = log.operationType
+
+                td = tr.insertCell()
+                td.innerText = log.amount
+
+                td = tr.insertCell()
+                td.innerText = log.operationTime
+
+                td = tr.insertCell()
+                td.innerText = log.task.title
+            });
+        }
+
+        function loadAccountsSummary() {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("GET", "/accounting/all_accounts_summary", true);
+            xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        render_all_accounts_summary_table(JSON.parse(xhr.response));
+                    } else {
+                        alert("Failed to get task list, code " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function render_all_accounts_summary_table(summary) {
+            const table = document.getElementById("summary");
+            summary.summaryDays.forEach(function(summaryDay) {
+                const tr = table.insertRow();
+
+                let td = tr.insertCell()
+                td.innerText = summaryDay.day
+
+                td = tr.insertCell()
+                td.innerText = summaryDay.amount
+            });
+        }
+    </script>
+</head>
+<body>
+<div th:if="${canViewPersonalAccountInfo}">
+    <h1>Информация по персональному аккаунту</h1>
+    <h2 id="personal_account_brief"></h2>
+    <table id="account_log_personal">
+        <tr>
+            <th>id операции</th>
+            <th>Тип</th>
+            <th>Сумма</th>
+            <th>Дата операции</th>
+            <th>Название задачи</th>
+        </tr>
+    </table>
+    <script>loadPersonalAccountInfo()</script>
+</div>
+<div th:if="${canViewAllAccountsSummary}">
+    <h1>Информация по доходам</h1>
+    <table id="summary">
+        <tr>
+            <th>День</th>
+            <th>Общий доход</th>
+        </tr>
+    </table>
+    <script>loadAccountsSummary()</script>
+</div>
+</body>
+</html>

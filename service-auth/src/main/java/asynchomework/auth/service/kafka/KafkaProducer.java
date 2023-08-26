@@ -45,7 +45,7 @@ public class KafkaProducer {
     validateAndSend(Topic.USER_STREAM, user.publicId(), userStreamEvent);
   }
 
-  public void sendUserDeletedCud(String userPublicId) {
+  public void sendUserDeletedStream(String userPublicId) {
     UserStreamEvent userStreamEvent = new UserStreamEvent(
         StreamEventType.DELETE,
         userPublicId,

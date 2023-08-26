@@ -1,5 +1,7 @@
 package asynchomework.eventapi;
 
+import asynchomework.eventapi.account.AccountBalanceChangedEvent;
+import asynchomework.eventapi.account.AccountStreamEvent;
 import asynchomework.eventapi.task.TaskAssignedEvent;
 import asynchomework.eventapi.task.TaskCreatedEvent;
 import asynchomework.eventapi.task.TaskResolvedEvent;
@@ -37,6 +39,9 @@ public class SchemaGenerator {
     JsonNode userStreamSchema = GENERATOR.generateSchema(Event.class, UserStreamEvent.class);
     JsonNode userCreatedSchema = GENERATOR.generateSchema(Event.class, UserCreatedEvent.class);
 
+    JsonNode accountStreamSchema = GENERATOR.generateSchema(Event.class, AccountStreamEvent.class);
+    JsonNode accountBalanceChangedSchema = GENERATOR.generateSchema(Event.class, AccountBalanceChangedEvent.class);
+
 
     writeToFile(taskStreamSchema, EventName.TASK_STREAM.name().toLowerCase(), 2);
     writeToFile(taskCreatedSchema, EventName.TASK_CREATED.name().toLowerCase(), 1);
@@ -44,6 +49,8 @@ public class SchemaGenerator {
     writeToFile(taskResolvedSchema, EventName.TASK_RESOLVED.name().toLowerCase(), 1);
     writeToFile(userStreamSchema, EventName.USER_STREAM.name().toLowerCase(), 1);
     writeToFile(userCreatedSchema, EventName.USER_CREATED.name().toLowerCase(), 1);
+    writeToFile(accountStreamSchema, EventName.ACCOUNT_STREAM.name().toLowerCase(), 1);
+    writeToFile(accountBalanceChangedSchema, EventName.ACCOUNT_BALANCE_CHANGED.name().toLowerCase(), 1);
   }
 
   private static void writeToFile(JsonNode schema, String event, int version) {

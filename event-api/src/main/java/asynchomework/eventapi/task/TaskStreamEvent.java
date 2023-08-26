@@ -13,7 +13,7 @@ public record TaskStreamEvent(
     String jiraId,
     String description,
     TaskStatus status,
-    long assigneeId,
+    String assigneePublicId,
     BigDecimal assignFee,
     BigDecimal resolvePrice,
     OffsetDateTime creationTime

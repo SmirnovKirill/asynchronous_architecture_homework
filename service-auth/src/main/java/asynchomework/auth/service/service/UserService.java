@@ -46,7 +46,7 @@ public class UserService {
   public void removeUser(long userId) {
     PopugUserDb user = userDao.findById(userId).orElseThrow();
     userDao.deleteById(userId);
-    kafkaProducer.sendUserDeletedCud(user.getUserPublicId());
+    kafkaProducer.sendUserDeletedStream(user.getUserPublicId());
   }
 
   @Transactional
