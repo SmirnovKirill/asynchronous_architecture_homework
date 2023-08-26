@@ -3,7 +3,7 @@ package asynchomework.auth.service.kafka;
 import asynchomework.auth.service.domain.User;
 import asynchomework.eventapi.Event;
 import asynchomework.eventapi.EventData;
-import asynchomework.eventapi.EventName;
+import asynchomework.eventapi.SchemaValidator;
 import asynchomework.eventapi.StreamEventType;
 import asynchomework.eventapi.Topic;
 import asynchomework.eventapi.user.UserCreatedEvent;
@@ -29,7 +29,7 @@ public class KafkaProducer {
         user.creationTime()
     );
 
-    this.template.send(Topic.USER.getName(), user.publicId(), createEvent(userCreatedEvent, EventName.USER_CREATED).toJsonString());
+    validateAndSend(Topic.USER, user.publicId(), userCreatedEvent);
   }
 
   public void sendUserCreatedStream(User user) {
@@ -42,7 +42,7 @@ public class KafkaProducer {
         user.creationTime()
     );
 
-    this.template.send(Topic.USER_STREAM.getName(), user.publicId(), createEvent(userStreamEvent, EventName.USER_STREAM).toJsonString());
+    validateAndSend(Topic.USER_STREAM, user.publicId(), userStreamEvent);
   }
 
   public void sendUserDeletedCud(String userPublicId) {
@@ -55,10 +55,12 @@ public class KafkaProducer {
         null
     );
 
-    this.template.send(Topic.USER_STREAM.getName(), userPublicId, createEvent(userStreamEvent, EventName.USER_STREAM).toJsonString());
+    validateAndSend(Topic.USER_STREAM, userPublicId, userStreamEvent);
   }
 
-  private <T extends EventData> Event<T> createEvent(T data, EventName eventName) {
-    return new Event<>(UUID.randomUUID().toString(), 1, eventName, OffsetDateTime.now(), "auth", data);
+  private <T extends EventData> void validateAndSend(Topic topic, String key, T data) {
+    Event<T> event = new Event<>(UUID.randomUUID().toString(), 1, data.getEventName(), OffsetDateTime.now(), "auth", data);
+    SchemaValidator.validate(event);
+    this.template.send(topic.getName(), key, event.toJsonString());
   }
 }

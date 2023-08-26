@@ -2,7 +2,7 @@ package asynchomework.tracker.service.kafka;
 
 import asynchomework.eventapi.Event;
 import asynchomework.eventapi.EventData;
-import asynchomework.eventapi.EventName;
+import asynchomework.eventapi.SchemaValidator;
 import asynchomework.eventapi.StreamEventType;
 import asynchomework.eventapi.Topic;
 import asynchomework.eventapi.task.TaskAssignedEvent;
@@ -28,27 +28,15 @@ public class KafkaProducer {
   }
 
   public void sendTaskCreated(Task task) {
-    this.template.send(
-        Topic.TASK.getName(),
-        task.publicId(),
-        createEvent(new TaskCreatedEvent(task.publicId(), task.assignee().id()), 1, EventName.TASK_CREATED).toJsonString()
-    );
+    validateAndSend(Topic.TASK, task.publicId(), new TaskCreatedEvent(task.publicId(), task.assignee().id()), 1);
   }
 
   public void sendTaskAssigned(Task task) {
-    this.template.send(
-        Topic.TASK.getName(),
-        task.publicId(),
-        createEvent(new TaskAssignedEvent(task.publicId(), task.assignee().id()), 1, EventName.TASK_ASSIGNED).toJsonString()
-    );
+    validateAndSend(Topic.TASK, task.publicId(), new TaskAssignedEvent(task.publicId(), task.assignee().id()), 1);
   }
 
   public void sendTaskResolved(Task task) {
-    this.template.send(
-        Topic.TASK.getName(),
-        task.publicId(),
-        createEvent(new TaskResolvedEvent(task.publicId(), task.assignee().id()), 1, EventName.TASK_RESOLVED).toJsonString()
-    );
+    validateAndSend(Topic.TASK, task.publicId(), new TaskResolvedEvent(task.publicId(), task.assignee().id()), 1);
   }
 
   public void sendTaskCreatedOrModifiedStream(Task task, StreamEventType eventType) {
@@ -66,7 +54,7 @@ public class KafkaProducer {
     );
 
     int version = StringUtils.isBlank(task.jiraId()) ? 1 : 2;
-    this.template.send(Topic.TASK_STREAM.getName(), task.publicId(), createEvent(taskStreamEvent, version, EventName.TASK_STREAM).toJsonString());
+    validateAndSend(Topic.TASK_STREAM, task.publicId(), taskStreamEvent, version);
   }
 
   public void sendTaskDeletedStream(String taskPublicId) {
@@ -83,10 +71,12 @@ public class KafkaProducer {
         null
     );
 
-    this.template.send(Topic.TASK_STREAM.getName(), taskPublicId, createEvent(taskStreamEvent, 1, EventName.TASK_STREAM).toJsonString());
+    validateAndSend(Topic.TASK_STREAM, taskPublicId, taskStreamEvent, 1);
   }
 
-  private <T extends EventData> Event<T> createEvent(T data, int version, EventName eventName) {
-    return new Event<>(UUID.randomUUID().toString(), version, eventName, OffsetDateTime.now(), "tracker", data);
+  private <T extends EventData> void validateAndSend(Topic topic, String key, T data, int version) {
+    Event<T> event = new Event<>(UUID.randomUUID().toString(), version, data.getEventName(), OffsetDateTime.now(), "tracker", data);
+    SchemaValidator.validate(event);
+    this.template.send(topic.getName(), key, event.toJsonString());
   }
 }

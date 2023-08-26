@@ -1,6 +1,8 @@
 package asynchomework.tracker.service.kafka;
 
 import asynchomework.eventapi.Event;
+import asynchomework.eventapi.EventName;
+import asynchomework.eventapi.SchemaValidator;
 import asynchomework.eventapi.user.UserStreamEvent;
 import asynchomework.tracker.service.service.TaskService;
 import asynchomework.tracker.service.service.TrackerUserService;
@@ -16,6 +18,7 @@ public class KafkaListener {
 
   @org.springframework.kafka.annotation.KafkaListener(topics = "user_stream")
   public void processUserStreamEvent(String eventString) {
+    SchemaValidator.validate(eventString, EventName.USER_STREAM, 1);
     Event<UserStreamEvent> userStreamEvent = Event.eventFromString(eventString);
     trackerUserService.processUserStreamEvent(userStreamEvent.data());
   }
