@@ -11,6 +11,7 @@ import asynchomework.tracker.service.domain.TaskStatus;
 import asynchomework.tracker.service.domain.TrackerUser;
 import asynchomework.tracker.service.kafka.KafkaProducer;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -46,7 +47,7 @@ public class TaskService {
         trackerUserDao.getRandomAssignee(),
         assignFee,
         resolvePrice,
-        OffsetDateTime.now()
+        Optional.ofNullable(createTask.creationTime()).orElse(OffsetDateTime.now())
     );
     Task task = Task.from(taskDao.save(taskDb));
 
@@ -63,6 +64,20 @@ public class TaskService {
   }
 
   @Transactional
+  public List<Task> getAllNotResolvedTasks() {
+    return getAllTasks().stream()
+        .filter(task -> task.status() == TaskStatus.IN_PROGRESS)
+        .toList();
+  }
+
+  @Transactional
+  public List<Task> getAllTasksCreatedAt(LocalDate creationDay) {
+    return getAllTasks().stream()
+        .filter(task -> task.creationTime().toLocalDate().equals(creationDay))
+        .toList();
+  }
+
+  @Transactional
   public List<Task> getUserTasks(TrackerUser user) {
     return taskDao.getUserTasks(user.id()).stream().map(Task::from).toList();
   }
@@ -73,10 +88,10 @@ public class TaskService {
   }
 
   @Transactional
-  public void resolveTask(long taskId) {
+  public void resolveTask(long taskId, OffsetDateTime resolveTime) {
     taskDao.resolveTask(taskId);
     Task updatedTask = getTask(taskId).orElseThrow();
-    kafkaProducer.sendTaskResolved(updatedTask);
+    kafkaProducer.sendTaskResolved(updatedTask, resolveTime);
     kafkaProducer.sendTaskCreatedOrModifiedStream(updatedTask, StreamEventType.UPDATE);
   }
 
@@ -92,7 +107,7 @@ public class TaskService {
 
   @Transactional
   public void shuffleTasks() {
-    List<Task> tasks = getAllTasks();
+    List<Task> tasks = getAllNotResolvedTasks();
     for (Task task : tasks) {
       TrackerUserDb newAssignee = trackerUserDao.getRandomAssignee();
       taskDao.changeAssignee(task.id(), newAssignee.getUserId());

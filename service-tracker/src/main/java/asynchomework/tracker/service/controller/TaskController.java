@@ -6,6 +6,7 @@ import asynchomework.tracker.service.domain.Task;
 import asynchomework.tracker.service.domain.TaskStatus;
 import asynchomework.tracker.service.service.AuthService;
 import asynchomework.tracker.service.service.TaskService;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -74,7 +75,7 @@ public class TaskController {
       throw new IllegalStateException("User can't resolve other user's task");
     }
 
-    taskService.resolveTask(taskId);
+    taskService.resolveTask(taskId, OffsetDateTime.now());
   }
 
   @PostMapping("shuffle")

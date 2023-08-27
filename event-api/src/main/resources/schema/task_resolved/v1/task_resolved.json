@@ -1,0 +1,40 @@
+{
+  "$schema" : "https://json-schema.org/draft/2020-12/schema",
+  "type" : "object",
+  "properties" : {
+    "data" : {
+      "type" : [ "object", "null" ],
+      "properties" : {
+        "assigneeId" : {
+          "type" : "integer"
+        },
+        "resolveTime" : {
+          "type" : [ "string", "null" ]
+        },
+        "taskPublicId" : {
+          "type" : [ "string", "null" ]
+        }
+      }
+    },
+    "eventId" : {
+      "type" : [ "string", "null" ]
+    },
+    "eventName" : {
+      "anyOf" : [ {
+        "type" : "null"
+      }, {
+        "type" : "string",
+        "enum" : [ "USER_STREAM", "USER_CREATED", "TASK_ASSIGNED", "TASK_STREAM", "TASK_CREATED", "TASK_RESOLVED", "ACCOUNT_STREAM", "ACCOUNT_BALANCE_CHANGED" ]
+      } ]
+    },
+    "eventTime" : {
+      "type" : [ "string", "null" ]
+    },
+    "eventVersion" : {
+      "type" : "integer"
+    },
+    "producer" : {
+      "type" : [ "string", "null" ]
+    }
+  }
+}
